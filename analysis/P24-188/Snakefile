@@ -1,0 +1,106 @@
+
+rule all:
+    input:
+        "concat_data_matrix.tsv",
+        expand("PCA/{label}.png", label=[
+            "QIDS_week4",
+            "QIDS_week8",
+            "HRSD_week4",
+            "HRSD_week8"
+        ]),
+        "linear_model/run_linear_regression.txt",
+        "volcano_plot/run_volcano_plot.txt",
+        "heatmap/run_heatmap.txt"
+        
+
+rule prepare_input:
+    input:
+        "file_locations.txt"
+    output:
+        "concat_data_matrix.tsv"
+    shell:
+        "python /Users/m221138/proteomics_core/src/prepare_input.py {input} {output}"
+
+rule run_pca:
+    input:
+        "concat_data_matrix.tsv"
+    output:
+        expand("PCA/{label}.png", label=[
+            "QIDS_week4",
+            "QIDS_week8",
+            "HRSD_week4",
+            "HRSD_week8"
+        ])
+    shell:
+        "mkdir -p PCA && Rscript /Users/m221138/proteomics_core/src/PCA.R {input}"
+
+rule run_linear_regression:
+    input:
+        "concat_data_matrix.tsv"
+    output:
+        "linear_model/run_linear_regression.txt"
+    shell:
+        """
+        for VAR in \\
+            "RemissionQIDS_W4 Remitter Non-Remitter" \\
+            "RemissionQIDS_W8 Remitter Non-Remitter" \\
+            "HRSDRemission_W4 Remitter Non-Remitter" \\
+            "HRSDRemission_W8 Remitter Non-Remitter" \\
+            "QIDS_Response2_W4 Response Non-Response" \\
+            "QIDS_Response2_W8 Response Non-Response" \\
+            "HRSD_Response2_W4 Response Non-Response" \\
+            "HRSD_Response2_W8 Response Non-Response"
+        do
+            echo "Running: $VAR"
+            Rscript /Users/m221138/proteomics_core/src/linear_regression.r $VAR || exit 1
+        done
+        echo "done" >> {output}
+        """
+
+
+rule run_volcano_plot:
+    input:
+        "concat_data_matrix.tsv"
+    output:
+        "volcano_plot/run_volcano_plot.txt"
+    shell:
+        """
+        for VAR in \\
+            "RemissionQIDS_W4 Remitter Non-Remitter" \\
+            "RemissionQIDS_W8 Remitter Non-Remitter" \\
+            "HRSDRemission_W4 Remitter Non-Remitter" \\
+            "HRSDRemission_W8 Remitter Non-Remitter" \\
+            "QIDS_Response2_W4 Response Non-Response" \\
+            "QIDS_Response2_W8 Response Non-Response" \\
+            "HRSD_Response2_W4 Response Non-Response" \\
+            "HRSD_Response2_W8 Response Non-Response"
+        do
+            echo "Running: $VAR"
+            Rscript /Users/m221138/proteomics_core/src/volcano_plot.r $VAR || exit 1
+        done
+        echo "done" >> {output}
+        """
+
+rule run_heatmap:
+    input:
+        "concat_data_matrix.tsv"
+    output:
+        "heatmap/run_heatmap.txt"
+    shell:
+        """
+        for VAR in \\
+            "RemissionQIDS_W4" \\
+            "RemissionQIDS_W8" \\
+            "HRSDRemission_W4" \\
+            "HRSDRemission_W8" \\
+            "QIDS_Response2_W4" \\
+            "QIDS_Response2_W8" \\
+            "HRSD_Response2_W4" \\
+            "HRSD_Response2_W8"
+        do
+            echo "Running: $VAR"
+            Rscript /Users/m221138/proteomics_core/src/heatmap_v2.r $VAR || exit 1
+        done
+        echo "done" >> {output}
+        """
+
