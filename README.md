@@ -3,6 +3,7 @@
 This repository contains scripts and workflows for the P24-188 proteomics data analysis project. The main components include PCA visualization, heatmap generation, linear regression modeling, volcano plot creation, and input data preparation.
 
 ## 📁 Project Structure (Example)
+```
 P24-188/
 ├── analysis/ # Snakemake pipeline (main workflow)
 │ └── Snakefile # Controls the execution of all steps
@@ -12,6 +13,7 @@ P24-188/
 │ ├── linear_regression.r
 │ ├── volcano_plot.r
 │ └── prepare_input.py
+```
 
 
 
@@ -37,5 +39,4 @@ Creates a volcano plot based on differential expression or regression output. Al
 The entire analysis is managed by a Snakemake pipeline located in the `analysis/` folder. Running the Snakefile will automatically execute all required steps in the correct order, assuming input files and environment are properly configured.
 
 ```bash
-cd analysis
-snakemake --core 1
+
