@@ -12,8 +12,11 @@ if (length(args) < 1) {
 
 class_column <- args[1]
 
-r# Load data
+# Load data
+regression_file <- paste0("/Users/m221138/proteomics_core/analysis/P24-188/linear_model/linear_regression.", class_column, ".tsv")
 regression_df <- read.csv(regression_file, sep="\t", row.names=1, check.names=FALSE)
+
+concat_file <- "/Users/m221138/proteomics_core/analysis/P24-188/concat_data_matrix.tsv"
 concat_df <- read.csv(concat_file, sep="\t", row.names=1, check.names=FALSE)
 
 # Filter significant proteins
@@ -67,11 +70,11 @@ my_palette <- colorRampPalette(c("steelblue4", "white", "firebrick4"))(100)
 my_breaks <- seq(-3, 3, length.out = 101)
 
 # Output file
-figure_title <- paste0("Top DA Proteins (", length(top_pos_genes), " ↑ / ", length(top_neg_genes), " ↓)")
+figure_title <- paste0("Top DA Proteins (", length(top_pos_genes), " UP-regulated / ", length(top_neg_genes), " DOWN-regulated)")
 output_pdf <- paste0(output_dir, "/heatmap/heatmap.", class_column, ".pdf")
 
 # Save heatmap to PDF
-pdf(output_pdf)
+pdf(output_pdf, width = 12, height = 6)
 
 pheatmap(heatmap_data_zscore,
          annotation_col = annotation_col,

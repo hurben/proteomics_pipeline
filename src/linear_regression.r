@@ -38,10 +38,19 @@ main <- function (tmp_df, column_of_interest, group_a_str, group_b_str){
         raw_coef <- coef(summary(marginal_model))[,1][2]
 
         # Full model
-        full_formula <- paste(
-        "y ~", column_of_interest,
-        "+ AGE + GENDER_CODE + Med_Start_Med + `B_HRS-D17/QIDS16_HRS-D17 Score` + `B_HRS-D17/QIDS16_QIDS16 Score`"
-        )
+        if (column_of_interest %in% c("RemissionQIDS_W4", "RemissionQIDS_W8", "QIDS_Response2_W4", "QIDS_Response2_W8")) {
+            full_formula <- paste(
+                "y ~", column_of_interest,
+                "+ AGE + GENDER_CODE + Med_Start_Med + `B_HRS-D17/QIDS16_QIDS16 Score`"
+            )
+        } 
+        else if (column_of_interest %in% c("HRSDRemission_W4", "HRSDRemission_W8", "HRSD_Response2_W4", "HRSD_Response2_W8")) {
+            full_formula <- paste(
+                "y ~", column_of_interest,
+                "+ AGE + GENDER_CODE + Med_Start_Med + `B_HRS-D17/QIDS16_HRS-D17 Score`"
+            )
+        }
+
         final_model <- lm(as.formula(full_formula), data = tmp_df)
         adj_pval <- coef(summary(final_model))[,4][2]
         adj_coef <- coef(summary(final_model))[,1][2]
@@ -49,15 +58,15 @@ main <- function (tmp_df, column_of_interest, group_a_str, group_b_str){
         results <- rbind(results, data.frame(
         feature = feature_name,
         log2_fold_change = log2fc,
-        coefficients_of_class= raw_coef,
-        p_value_of_class = raw_pval,
-        coefficients_of_class_adj_covariates = adj_coef,
-        p_value_of_class_adj_covariates = adj_pval,
+        coefficient_marginal_model= raw_coef,
+        p_value_marginal_model = raw_pval,
+        coefficients_adj_covariates = adj_coef,
+        p_value_adj_covariates = adj_pval,
         stringsAsFactors = FALSE
         ))
     }
     # Adjust p-values
-    results$FDR_value_of_class_adj_covariates <- p.adjust(results$p_value_of_class_adj_covariates, method = "fdr")
+    results$FDR_adj_covariates <- p.adjust(results$p_value_adj_covariates, method = "fdr")
     output_file <- paste0(output_dir, "/linear_model/linear_regression.", column_of_interest, ".tsv")
     write.table(results, file = output_file, sep = "\t", row.names = FALSE, quote = FALSE)
 }
