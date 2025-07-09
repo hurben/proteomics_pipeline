@@ -11,7 +11,8 @@ rule all:
         "linear_model/run_linear_regression.txt",
         "linear_model/run_linear_regression_primary1.txt",
         "volcano_plot/run_volcano_plot.txt",
-        "heatmap/run_heatmap.txt"
+        "heatmap/run_heatmap.txt",
+        "boxplot/run_boxplot.txt"
         
 
 rule prepare_input:
@@ -132,6 +133,30 @@ rule run_heatmap:
         do
             echo "Running: $VAR"
             Rscript /Users/m221138/proteomics_core/src/heatmap_v2.r $VAR || exit 1
+        done
+        echo "done" >> {output}
+        """
+
+rule run_boxplot:
+    input:
+        "concat_data_matrix.tsv",
+        "linear_model/run_linear_regression.txt"
+    output:
+        "boxplot/run_boxplot.txt"
+    shell:
+        """
+        for VAR in \\
+            "RemissionQIDS_W4" \\
+            "RemissionQIDS_W8" \\
+            "HRSDRemission_W4" \\
+            "HRSDRemission_W8" \\
+            "QIDS_Response2_W4" \\
+            "QIDS_Response2_W8" \\
+            "HRSD_Response2_W4" \\
+            "HRSD_Response2_W8"
+        do
+            echo "Running: $VAR"
+            Rscript /Users/m221138/proteomics_core/src/boxplot.r $VAR || exit 1
         done
         echo "done" >> {output}
         """

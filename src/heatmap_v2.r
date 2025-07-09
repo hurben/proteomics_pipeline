@@ -3,11 +3,11 @@ library(pheatmap)
 output_dir <- "/Users/m221138/proteomics_core/analysis/P24-188"
 if (!dir.exists(file.path(output_dir, "heatmap"))) {
     dir.create(file.path(output_dir, "heatmap"))
-}
+}<group_a_str> <group_b_str>
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) < 1) {
-    stop("Usage: Rscript heatmap.r <column of interest> <group_a_str> <group_b_str>")
+    stop("Usage: Rscript heatmap.r <column of interest>")
 }
 
 class_column <- args[1]
@@ -70,7 +70,7 @@ my_palette <- colorRampPalette(c("steelblue4", "white", "firebrick4"))(100)
 my_breaks <- seq(-3, 3, length.out = 101)
 
 # Output file
-figure_title <- paste0("Top DA Proteins (", length(top_pos_genes), " UP-regulated / ", length(top_neg_genes), " DOWN-regulated)")
+figure_title <- paste0("Top Differentially Expressed Proteins (", length(top_pos_genes), " UP-regulated / ", length(top_neg_genes), " DOWN-regulated)")
 output_pdf <- paste0(output_dir, "/heatmap/heatmap.", class_column, ".pdf")
 
 # Save heatmap to PDF
